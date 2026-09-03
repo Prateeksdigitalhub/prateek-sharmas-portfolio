@@ -69,7 +69,7 @@
     <section class="hero">
       <div class="wrap">
         <div class="eyebrow">LET'S WORK TOGETHER</div>
-        <h1>Tell me what you're trying to <em>grow.</em></h1>
+        <h1>Tell me what you're trying to improve.</h1>
         <p class="lead">Share a little about your business, website, or digital growth challenge. I'll use the details to understand where SEO, content, search advertising, or AI-powered search strategy could help.</p>
       </div>
     </section>
@@ -87,11 +87,22 @@
 
       <div class="form-card">
         <div id="success" class="success">
-          <h2>Thanks — your message is on its way.</h2>
-          <p style="margin-top:6px;color:#59636a">I'll review the details and get back to you.</p>
-        </div>
+  <div style="width:44px;height:44px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:800;margin-bottom:16px">
+    ✓
+  </div>
 
-        <form name="portfolio-contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/contact.html?success=true">
+  <h2>Thanks — your enquiry is in.</h2>
+
+  <p style="margin-top:8px;color:#59636a">
+    I’ve received your message and the details you shared. I’ll review it and get back to you as soon as possible.
+  </p>
+
+  <a class="btn" style="margin-top:20px" href="index.html">
+    ← Back to portfolio
+  </a>
+</div>
+
+        <form name="portfolio-contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
           <input type="hidden" name="form-name" value="portfolio-contact">
           <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
 
@@ -164,9 +175,52 @@
   </footer>
 
   <script>
-    if(new URLSearchParams(location.search).get('success') === 'true'){
-      document.getElementById('success').style.display='block';
+  const form = document.querySelector('form[name="portfolio-contact"]');
+  const success = document.getElementById('success');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const button = form.querySelector('button[type="submit"]');
+
+    button.disabled = true;
+    button.textContent = 'Sending…';
+
+    const formData = new FormData(form);
+    const encoded = new URLSearchParams();
+
+    for (const [key, value] of formData.entries()) {
+      encoded.append(key, value);
     }
-  </script>
+
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: encoded.toString()
+      });
+
+      if (!response.ok) {
+        throw new Error('Submission failed');
+      }
+
+      form.style.display = 'none';
+      success.style.display = 'block';
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = 'Send Enquiry →';
+
+      alert('Something went wrong while sending your enquiry. Please try again.');
+    }
+  });
+</script>
 </body>
 </html>
